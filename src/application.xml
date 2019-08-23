@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans  
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop 
+                           http://www.springframework.org/schema/aop/spring-aop.xsd
+                           ">
+                         
+    <!--set注入  -->
+	<bean id="company" class="springioc.pojo.Company">
+		<property name="name" value="深圳民航凯亚"></property>
+		<property name="address" value="南山科技园"></property>
+		<property name="type" value="2"></property>
+	</bean>
+	
+	<!-- 构造器注入1 通过参数名-->
+	<bean id="company1" class="springioc.pojo.Company">
+		<constructor-arg name="name" value="上海天正"></constructor-arg>
+		<constructor-arg name="address" value="上海中山公园"></constructor-arg>
+		<constructor-arg name="type" value="2"></constructor-arg>
+	</bean>
+	
+	<!-- 构造器注入2 通过参参数下标-->
+	<bean id="company2" class="springioc.pojo.Company">
+		<constructor-arg index="0" value="知合兴"></constructor-arg>
+		<constructor-arg index="1" value="深圳大学城"></constructor-arg>
+		<constructor-arg index="2" value="2"></constructor-arg>
+	</bean>
+	
+	
+	<bean id="before" class="springaop.WelcomeAdviceBefore"/>
+	<bean id="after" class="springaop.ThanksAdviceAfter"/>
+	<bean id="shoppingSon" class="springaop.ShoppingSon"/>
+	<bean name="shoppingService" class="springaop.ShoppingService"/>
+	<bean name="shoppingService2" class="springaop.ShoppingService2"/>
+	
+	
+	
+	<!-- springAOP -->
+	<bean id="shoppingRegexp" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice" ref="shoppingService2"></property>
+		<property name="patterns">
+			<value>.*Note.*</value>
+		</property>
+	</bean>
+	
+	<!-- 混合由spring提供的类来操作 -->
+	<bean id="shoppingProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<!-- 注入目标 -->
+		<property name="target" ref="shoppingSon"></property>
+		<!-- 注入增强 -->
+		<property name="interceptorNames">
+			<list>
+				<idref bean="after"/>
+				<idref bean="before"/>
+				<idref bean="shoppingService"/>
+				<idref bean="shoppingRegexp"/>
+				
+			
+			</list>
+		</property>
+		<!-- 注入接口（全路径） -->
+		<property name="interfaces">
+			<list>
+				<value>springaop.Shopping</value>
+			</list>
+		</property>
+	</bean>
+</beans>
